@@ -1,0 +1,200 @@
+﻿@page "/dashboard"
+@inject ApiService Api
+@inject NavigationManager Nav
+@using SmartX.Client.Models
+@using SmartX.Client.Components
+@implements IDisposable
+
+<PageTitle>Smart-X | Dashboard</PageTitle>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-0">Telemetry Dashboard</h2>
+            <small class="text-muted">Live view of the Smart-X mesh</small>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" @onclick="LoadData">
+                🔄 Refresh
+            </button>
+            <button class="btn btn-success" @onclick="SimulateLoad">
+                ⚡ Simulate Load
+            </button>
+            <button class="btn btn-primary" @onclick="GoToRegister">
+                ➕ Register Sensor
+            </button>
+        </div>
+    </div>
+
+    @if (_stats != null)
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card stat-blue">
+                    <div class="stat-label">Total Sensors</div>
+                    <div class="stat-value">@_stats.TotalSensors</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-green">
+                    <div class="stat-label">Active</div>
+                    <div class="stat-value">@_stats.ActiveSensors</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-amber">
+                    <div class="stat-label">Total Readings</div>
+                    <div class="stat-value">@_stats.TotalTelemetryRecords</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-red">
+                    <div class="stat-label">Anomalies Detected</div>
+                    <div class="stat-value">@_stats.TotalAnomalies</div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (_criticalSensors.Any())
+    {
+        @foreach (var sensor in _criticalSensors)
+        {
+            <AlertBanner Title="@($"Sensor {sensor.MacAddress} is not reporting")"
+                         Message="@($"Location: {sensor.DeploymentLocation}")"
+                         Severity="AlertBanner.AlertSeverity.Critical" />
+        }
+    }
+
+    @if (_warningSensors.Any())
+    {
+        @foreach (var sensor in _warningSensors)
+        {
+            <AlertBanner Title="@($"Sensor {sensor.MacAddress} showing unusual readings")"
+                         Message="@($"Location: {sensor.DeploymentLocation}")"
+                         Severity="AlertBanner.AlertSeverity.Warning" />
+        }
+    }
+
+    @if (_sensors.Any())
+    {
+        <div class="row g-3">
+            @foreach (var sensor in _sensors)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <SensorCard Sensor="sensor"
+                                LatestRecord="GetLatest(sensor.MacAddress)"
+                                OnViewHistoryCallback="ViewHistory"
+                                OnDeleteCallback="DeleteSensor" />
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <h5>No sensors registered yet.</h5>
+            <p>Click "Register Sensor" to get started.</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Sensor> _sensors = new();
+    private Dictionary<string, TelemetryRecord> _latestReadings = new();
+    private DashboardStats? _stats;
+    private System.Threading.Timer? _timer;
+
+    private List<Sensor> _criticalSensors = new();
+    private List<Sensor> _warningSensors = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        _timer = new System.Threading.Timer(async _ =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await LoadData();
+                StateHasChanged();
+            });
+        }, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+    }
+
+    private async Task LoadData()
+    {
+        _sensors = await Api.GetSensorsAsync();
+        _stats = await Api.GetDashboardStatsAsync();
+
+        _latestReadings.Clear();
+        _criticalSensors.Clear();
+        _warningSensors.Clear();
+
+        foreach (var sensor in _sensors)
+        {
+            var record = await Api.GetLatestTelemetryAsync(sensor.MacAddress);
+            if (record != null)
+            {
+                _latestReadings[sensor.MacAddress] = record;
+
+                var value = ConvertToDouble(record.Value);
+                if (sensor.Category == SensorType.Environmental && (value < 0 || value > 40))
+                    _criticalSensors.Add(sensor);
+                else if (sensor.Category == SensorType.PowerConsumption && value > 500)
+                    _warningSensors.Add(sensor);
+            }
+            else
+            {
+                if (sensor.LastSeen.HasValue &&
+                    (DateTime.UtcNow - sensor.LastSeen.Value).TotalMinutes > 5)
+                {
+                    _criticalSensors.Add(sensor);
+                }
+            }
+        }
+    }
+
+    private TelemetryRecord? GetLatest(string mac)
+    {
+        return _latestReadings.TryGetValue(mac, out var r) ? r : null;
+    }
+
+    private double ConvertToDouble(object? value)
+    {
+        if (value == null) return 0;
+        if (value is System.Text.Json.JsonElement je)
+        {
+            if (je.ValueKind == System.Text.Json.JsonValueKind.Number) return je.GetDouble();
+            if (je.ValueKind == System.Text.Json.JsonValueKind.True) return 1;
+            if (je.ValueKind == System.Text.Json.JsonValueKind.False) return 0;
+        }
+        return double.TryParse(value.ToString(), out var d) ? d : 0;
+    }
+
+    private async Task SimulateLoad()
+    {
+        await Api.SimulateBulkTelemetryAsync();
+        await LoadData();
+    }
+
+    private void GoToRegister()
+    {
+        Nav.NavigateTo("/register");
+    }
+
+    private void ViewHistory(string mac)
+    {
+        Nav.NavigateTo($"/history/{mac}");
+    }
+
+    private async Task DeleteSensor(string mac)
+    {
+        await Api.DeleteSensorAsync(mac);
+        await LoadData();
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}
