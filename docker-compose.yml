@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  smartx-api:
+    build:
+      context: ./SmartX.API
+      dockerfile: Dockerfile
+    container_name: smartx-api
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5001
+    restart: unless-stopped

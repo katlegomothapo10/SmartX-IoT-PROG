@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+  </Folder>
   <Project Path="SmartX.API/SmartX.API.csproj" />
   <Project Path="SmartX.Client/SmartX.Client.csproj" />
 </Solution>
