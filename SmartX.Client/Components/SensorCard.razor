@@ -1,0 +1,80 @@
+﻿@using SmartX.Client.Models
+
+<div class="card sensor-card @GetStatusClass()">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold">@Sensor.MacAddress</span>
+        <span class="badge @GetStatusBadgeClass()">@Sensor.Status</span>
+    </div>
+    <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">@Sensor.DeploymentLocation</h6>
+        <p class="mb-1"><strong>Category:</strong> @Sensor.Category</p>
+        <p class="mb-1"><strong>Zone:</strong> @Sensor.ZoneId</p>
+        @if (!string.IsNullOrEmpty(Sensor.Description))
+        {
+            <p class="mb-1 small text-muted">@Sensor.Description</p>
+        }
+        @if (LatestRecord != null)
+        {
+            <hr />
+            <p class="mb-0">
+                <strong>Latest:</strong>
+                <span class="reading-value">@LatestRecord.Value</span>
+                <span class="text-muted small ms-1">
+                    (@LatestRecord.Timestamp.ToLocalTime().ToString("HH:mm:ss"))
+                </span>
+            </p>
+        }
+        else
+        {
+            <hr />
+            <p class="mb-0 text-muted small">No readings yet</p>
+        }
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <button class="btn btn-sm btn-outline-primary flex-grow-1" @onclick="OnViewHistory">
+            History
+        </button>
+        <button class="btn btn-sm btn-outline-danger" @onclick="OnDelete">
+            Delete
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Sensor Sensor { get; set; } = new();
+    [Parameter] public TelemetryRecord? LatestRecord { get; set; }
+    [Parameter] public EventCallback<string> OnViewHistoryCallback { get; set; }
+    [Parameter] public EventCallback<string> OnDeleteCallback { get; set; }
+
+    private async Task OnViewHistory()
+    {
+        await OnViewHistoryCallback.InvokeAsync(Sensor.MacAddress);
+    }
+
+    private async Task OnDelete()
+    {
+        await OnDeleteCallback.InvokeAsync(Sensor.MacAddress);
+    }
+
+    private string GetStatusClass()
+    {
+        return Sensor.Status switch
+        {
+            SensorStatus.Active => "border-success",
+            SensorStatus.Disconnected => "border-danger",
+            SensorStatus.Error => "border-warning",
+            _ => "border-secondary"
+        };
+    }
+
+    private string GetStatusBadgeClass()
+    {
+        return Sensor.Status switch
+        {
+            SensorStatus.Active => "bg-success",
+            SensorStatus.Disconnected => "bg-danger",
+            SensorStatus.Error => "bg-warning text-dark",
+            _ => "bg-secondary"
+        };
+    }
+}
