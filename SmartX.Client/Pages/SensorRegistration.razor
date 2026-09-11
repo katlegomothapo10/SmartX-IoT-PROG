@@ -1,0 +1,154 @@
+﻿@page "/register"
+@inject ApiService Api
+@inject NavigationManager Nav
+@using SmartX.Client.Models
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>Smart-X | Register Sensor</PageTitle>
+
+<div class="container py-4" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Register New Sensor</h2>
+            <small class="text-muted">Add a device to the Smart-X mesh</small>
+        </div>
+        <button class="btn btn-outline-secondary" @onclick="GoBack">← Back</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_successMessage))
+    {
+        <div class="alert alert-success">@_successMessage</div>
+    }
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="alert alert-danger">@_errorMessage</div>
+    }
+
+    <EditForm Model="_sensor" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-primary text-white">
+                <strong>Sensor Details</strong>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">MAC Address / Unique ID <span class="text-danger">*</span></label>
+                    <InputText class="form-control" @bind-Value="_sensor.MacAddress"
+                               placeholder="AA:BB:CC:DD:EE:FF" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Deployment Location <span class="text-danger">*</span></label>
+                    <InputText class="form-control" @bind-Value="_sensor.DeploymentLocation"
+                               placeholder="e.g. Hydro Bay 1 / Tray A" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Category</label>
+                        <InputSelect class="form-select" @bind-Value="_sensor.Category">
+                            @foreach (var cat in Enum.GetValues<SensorType>())
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Zone ID</label>
+                        <InputText class="form-control" @bind-Value="_sensor.ZoneId"
+                                   placeholder="zone-1" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Facility ID</label>
+                        <InputText class="form-control" @bind-Value="_sensor.FacilityId"
+                                   placeholder="facility-a" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <InputTextArea class="form-control" @bind-Value="_sensor.Description"
+                                   rows="2" placeholder="Optional description" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-secondary text-white">
+                <strong>Configuration File (Optional)</strong>
+            </div>
+            <div class="card-body">
+                <InputFile OnChange="OnFileSelected" class="form-control" />
+                @if (_selectedFileName != null)
+                {
+                    <small class="text-muted d-block mt-2">Selected: @_selectedFileName</small>
+                }
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1" disabled="@_submitting">
+                @(_submitting ? "Registering..." : "Register Sensor")
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private Sensor _sensor = new();
+    private IBrowserFile? _selectedFile;
+    private string? _selectedFileName;
+    private string? _successMessage;
+    private string? _errorMessage;
+    private bool _submitting = false;
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+        _selectedFileName = e.File?.Name;
+    }
+
+    private async Task Submit()
+    {
+        _submitting = true;
+        _successMessage = null;
+        _errorMessage = null;
+
+        try
+        {
+            var registered = await Api.RegisterSensorAsync(_sensor);
+            if (!registered)
+            {
+                _errorMessage = "Failed to register sensor. Check the MAC address is unique.";
+                _submitting = false;
+                return;
+            }
+
+            if (_selectedFile != null)
+            {
+                using var stream = _selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+                await Api.UploadConfigurationFileAsync(_sensor.MacAddress, stream, _selectedFile.Name);
+            }
+
+            _successMessage = $"Sensor {_sensor.MacAddress} registered successfully!";
+            _sensor = new Sensor();
+            _selectedFile = null;
+            _selectedFileName = null;
+
+            await Task.Delay(1500);
+            Nav.NavigateTo("/dashboard");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error: {ex.Message}";
+        }
+
+        _submitting = false;
+    }
+
+    private void GoBack()
+    {
+        Nav.NavigateTo("/dashboard");
+    }
+}
