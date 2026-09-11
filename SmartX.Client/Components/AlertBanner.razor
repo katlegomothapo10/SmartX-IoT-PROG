@@ -1,0 +1,52 @@
+﻿@if (Severity == AlertSeverity.Critical)
+{
+    <div class="alert alert-danger d-flex align-items-center alert-banner" role="alert">
+        <span class="alert-icon">🔴</span>
+        <div class="flex-grow-1 ms-2">
+            <strong>@Title</strong>
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="small">@Message</div>
+            }
+        </div>
+    </div>
+}
+else if (Severity == AlertSeverity.Warning)
+{
+    <div class="alert alert-warning d-flex align-items-center alert-banner" role="alert">
+        <span class="alert-icon">🟡</span>
+        <div class="flex-grow-1 ms-2">
+            <strong>@Title</strong>
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="small">@Message</div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-success d-flex align-items-center alert-banner" role="alert">
+        <span class="alert-icon">🟢</span>
+        <div class="flex-grow-1 ms-2">
+            <strong>@Title</strong>
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <div class="small">@Message</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public AlertSeverity Severity { get; set; } = AlertSeverity.Normal;
+
+    public enum AlertSeverity
+    {
+        Normal,
+        Warning,
+        Critical
+    }
+}

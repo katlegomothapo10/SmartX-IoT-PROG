@@ -1,0 +1,64 @@
+﻿@page "/"
+@inject NavigationManager Nav
+
+<PageTitle>Smart-X | Gateway</PageTitle>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Smart-X IoT Gateway</h1>
+        <p class="lead text-muted">Hybrid IoT Mesh Ecosystem Management Console</p>
+        <hr class="my-4" style="max-width: 400px; margin: auto;" />
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 pillar-card active-pillar" @onclick="GoToDashboard">
+                <div class="card-body text-center p-4">
+                    <div class="pillar-icon">📡</div>
+                    <h4 class="card-title mt-3">Sensor Data Ingestion</h4>
+                    <p class="card-text text-muted">
+                        Register sensors, push telemetry, and monitor live readings across the mesh.
+                    </p>
+                    <span class="badge bg-success mt-2">Active</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 pillar-card disabled-pillar">
+                <div class="card-body text-center p-4">
+                    <div class="pillar-icon">⚡</div>
+                    <h4 class="card-title mt-3">Command Stream & History</h4>
+                    <p class="card-text text-muted">
+                        Real-time command dispatch and audit history.
+                    </p>
+                    <span class="badge bg-secondary mt-2">Coming in Part 2</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 pillar-card disabled-pillar">
+                <div class="card-body text-center p-4">
+                    <div class="pillar-icon">🌐</div>
+                    <h4 class="card-title mt-3">Network Topology</h4>
+                    <p class="card-text text-muted">
+                        Mesh routing, node discovery and link health.
+                    </p>
+                    <span class="badge bg-secondary mt-2">Coming in final PoE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5 text-muted small">
+        &copy; 2026 Smart-X Ecosystem &mdash; Part 1 PoE
+    </div>
+</div>
+
+@code {
+    private void GoToDashboard()
+    {
+        Nav.NavigateTo("/dashboard");
+    }
+}
