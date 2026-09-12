@@ -25,7 +25,6 @@ The Smart-X system simulates thousands of ESP32 microcontrollers publishing tele
 - A **Blazor WebAssembly frontend** for real-time monitoring
 - In-memory data storage with batching for high-throughput ingestion
 
----
 
 
 **Tech Stack:**
@@ -34,7 +33,6 @@ The Smart-X system simulates thousands of ESP32 microcontrollers publishing tele
 - **Data Storage:** In-memory (ConcurrentDictionary)
 - **Styling:** Bootstrap 5 + custom CSS
 
----
 
 ## Prerequisites
 
