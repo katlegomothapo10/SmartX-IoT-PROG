@@ -120,7 +120,7 @@
             var registered = await Api.RegisterSensorAsync(_sensor);
             if (!registered)
             {
-                _errorMessage = "Failed to register sensor. Check the MAC address is unique.";
+               _errorMessage = "Failed to register sensor. Please verify the MAC address is unique and all required fields are filled in.";
                 _submitting = false;
                 return;
             }
