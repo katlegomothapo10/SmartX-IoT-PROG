@@ -2,11 +2,6 @@
 
 namespace SmartX.API.Models;
 
-/// <summary>
-/// A generic wrapper for telemetry data. The <T> means it can hold
-/// any data type (float, int, bool, etc.) without boxing/unboxing overhead.
-/// </summary>
-/// <typeparam name="T">The data type being carried (e.g. float, int, bool)</typeparam>
 public class TelemetryPacket<T>
 {
     [JsonPropertyName("deviceMac")]
