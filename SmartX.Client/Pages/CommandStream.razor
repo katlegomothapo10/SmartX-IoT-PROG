@@ -1,0 +1,137 @@
+﻿@page "/command-stream"
+@inject ApiService Api
+@inject NavigationManager Nav
+@using SmartX.Client.Models
+
+<PageTitle>Smart-X | Command Stream</PageTitle>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>⚡ Real-Time Command Stream</h2>
+        <button class="btn btn-outline-secondary" @onclick="GoBack">Back</button>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3 border-primary">
+                <div class="card-header bg-primary text-white">Manual Override</div>
+                <div class="card-body">
+                    <input class="form-control mb-2" placeholder="Device MAC (e.g. AA:BB...)" @bind="_cmdMac" />
+                    <select class="form-select mb-2" @bind="_cmdType">
+                        <option value="TurnOn">Turn On</option>
+                        <option value="TurnOff">Turn Off</option>
+                        <option value="Toggle">Toggle</option>
+                        <option value="EmergencyShutdown">Emergency Shutdown</option>
+                    </select>
+                    <button class="btn btn-primary w-100 mb-2" @onclick="IssueCommand">Execute Command</button>
+                    <button class="btn btn-warning w-100" @onclick="UndoCommand">↩ Undo Last Action</button>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-3 border-danger">
+                <div class="card-header bg-danger text-white">Test Simulator</div>
+                <div class="card-body">
+                    <button class="btn btn-outline-danger w-100 mb-2" @onclick="SimulateCritical">🔥 Simulate High-Priority Alert</button>
+                    <button class="btn btn-outline-secondary w-100" @onclick="SimulateDisconnect">🔌 Simulate Device Disconnect</button>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">System Metrics</div>
+                <div class="card-body">
+                    <div>Queue: @_stats?.QueueCount</div>
+                    <div>Priority Queue: @_stats?.CriticalCount</div>
+                    <div>Undo Stack: @_stats?.UndoCount</div>
+                    <div>Disconnected: @_stats?.DisconnectedCount</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-3 border-success">
+                <div class="card-header bg-success text-white">🤖 Predictive Automated Insights</div>
+                <div class="card-body">
+                    @if (_insights != null && _insights.Count > 0)
+                    {
+                        foreach (var insight in _insights)
+                        {
+                            <div class="alert alert-info py-2 mb-2">
+                                <strong>@insight.Title</strong> - @insight.Description
+                                <br /><small class="text-muted">Reason: @insight.Reason</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+
+                        <p class="text-muted m-0">No suggestions yet.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">Command History</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Device</th><th>Command</th><th>Status</th></tr></thead>
+                        <tbody>
+                            @if (_history != null)
+                            {
+                                foreach (var item in _history)
+                                {
+                                    <tr class="@(item.IsUndone ? "table-danger text-decoration-line-through" : "")">
+                                        <td>@item.DeviceMac</td>
+                                        <td>@item.CommandType</td>
+                                        <td>@(item.IsUndone ? "Undone" : "Executed")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _cmdMac = "";
+    private string _cmdType = "TurnOn";
+    private RealtimeStats? _stats;
+    private List<SuggestedAction>? _insights;
+    private List<CommandRequest>? _history;
+    private System.Threading.Timer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshData();
+        _timer = new System.Threading.Timer(async _ => await InvokeAsync(RefreshData), null, 3000, 3000);
+    }
+
+    private async Task RefreshData()
+    {
+        try
+        {
+            _stats = await Api.GetRealtimeStatsAsync();
+            _insights = await Api.GetInsightsAsync();
+            _history = await Api.GetCommandHistoryAsync();
+            StateHasChanged();
+        }
+        catch { }
+    }
+
+    private async Task IssueCommand()
+    {
+        if (string.IsNullOrEmpty(_cmdMac)) return;
+        await Api.IssueCommandAsync(new CommandRequest { DeviceMac = _cmdMac, CommandType = _cmdType });
+        await Api.LogSearchAsync(_cmdMac);
+        _cmdMac = "";
+        await RefreshData();
+    }
+
+    private async Task UndoCommand() { await Api.UndoCommandAsync(); await RefreshData(); }
+    private async Task SimulateCritical() { await Api.SimulateCriticalAsync(); await RefreshData(); }
+    private async Task SimulateDisconnect() { await Api.SimulateDisconnectAsync(); await RefreshData(); }
+    private void GoBack() => Nav.NavigateTo("/");
+    public void Dispose() => _timer?.Dispose();
+}

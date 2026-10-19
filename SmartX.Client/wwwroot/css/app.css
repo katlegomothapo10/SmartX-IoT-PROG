@@ -203,3 +203,106 @@ h1:focus {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+/* ============================================================
+   PART 2 — REAL-TIME COMMAND STREAM
+   ============================================================ */
+
+.pillar-command {
+    background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
+}
+
+    .pillar-command:hover {
+        box-shadow: 0 10px 25px rgba(253, 126, 20, 0.15);
+    }
+
+/* --- Device List Rows --- */
+.device-row {
+    transition: background-color 0.15s ease;
+    border-radius: 6px;
+}
+
+    .device-row:hover {
+        background-color: #f0f4ff;
+    }
+
+    .device-row:last-child {
+        border-bottom: none !important;
+    }
+
+/* --- Command History Rows --- */
+.command-row {
+    transition: background-color 0.15s ease;
+}
+
+    .command-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    .command-row:last-child {
+        border-bottom: none !important;
+    }
+
+/* --- Timeline Rows --- */
+.timeline-row {
+    transition: background-color 0.15s ease;
+    font-size: 0.9rem;
+}
+
+    .timeline-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    .timeline-row:last-child {
+        border-bottom: none !important;
+    }
+
+/* --- Suggested Actions --- */
+.suggestion-card {
+    border-left: 4px solid #0dcaf0 !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .suggestion-card:hover {
+        transform: translateX(2px);
+        box-shadow: 0 2px 8px rgba(13, 202, 240, 0.2);
+    }
+
+/* --- Card Headers --- */
+.card-header.bg-dark {
+    background-color: #212529 !important;
+}
+
+.card-header.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+/* --- Scrollbars (for inner lists) --- */
+.card-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.card-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.card-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+    .card-body::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+/* --- Form Controls in Filter Bar --- */
+.form-select-sm, .form-control-sm {
+    border-radius: 6px;
+}
+
+/* --- Badges --- */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}

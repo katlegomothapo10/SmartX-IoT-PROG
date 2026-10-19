@@ -102,53 +102,47 @@
     private string? _successMessage;
     private string? _errorMessage;
     private bool _submitting = false;
+    private string? _fileTextContent;
 
-    private void OnFileSelected(InputFileChangeEventArgs e)
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
     {
         _selectedFile = e.File;
         _selectedFileName = e.File?.Name;
+        if (_selectedFile != null && _selectedFile.Name.EndsWith(".txt")) {
+            using var reader = new StreamReader(_selectedFile.OpenReadStream(10000000));
+            _fileTextContent = await reader.ReadToEndAsync();
+        }
     }
 
     private async Task Submit()
     {
         _submitting = true;
-        _successMessage = null;
         _errorMessage = null;
-
-        try
-        {
-            var registered = await Api.RegisterSensorAsync(_sensor);
-            if (!registered)
-            {
-                _errorMessage = "Failed to register sensor. Check the MAC address is unique.";
-                _submitting = false;
+        try {
+            if (_fileTextContent != null) {
+                var lines = _fileTextContent.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                int count = 0;
+                foreach (var line in lines) {
+                    var mac = line.Trim();
+                    if (string.IsNullOrEmpty(mac)) continue;
+                    var bulkSensor = new Sensor { MacAddress = mac, DeploymentLocation = "Auto-loaded", Category = SensorType.Environmental, ZoneId = "auto", FacilityId = "a", Description = "Imported" };
+                    await Api.RegisterSensorAsync(bulkSensor);
+                    count++;
+                }
+                _successMessage = $"Imported {count} devices!";
+                await Task.Delay(2000);
+                Nav.NavigateTo("/dashboard");
                 return;
             }
 
-            if (_selectedFile != null)
-            {
-                using var stream = _selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-                await Api.UploadConfigurationFileAsync(_sensor.MacAddress, stream, _selectedFile.Name);
-            }
-
-            _successMessage = $"Sensor {_sensor.MacAddress} registered successfully!";
-            _sensor = new Sensor();
-            _selectedFile = null;
-            _selectedFileName = null;
-
+            var registered = await Api.RegisterSensorAsync(_sensor);
+            if (!registered) { _errorMessage = "Failed. MAC exists."; _submitting = false; return; }
+            _successMessage = $"Sensor {_sensor.MacAddress} registered!";
             await Task.Delay(1500);
             Nav.NavigateTo("/dashboard");
-        }
-        catch (Exception ex)
-        {
-            _errorMessage = $"Error: {ex.Message}";
-        }
-
+        } catch (Exception ex) { _errorMessage = ex.Message; }
         _submitting = false;
     }
-
-    private void GoBack()
-    {
-        Nav.NavigateTo("/dashboard");
-    }
+    private void GoBack() => Nav.NavigateTo("/dashboard");
+}
 }
