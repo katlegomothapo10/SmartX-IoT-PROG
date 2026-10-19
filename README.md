@@ -262,4 +262,5 @@ SmartX-IoT/
 
 ## License
 
-This project is submitted as academic work for the IIE. Not for redistribution.
+This project is submitted as academic work for the IIE. Not for redistribution.   
+ 
