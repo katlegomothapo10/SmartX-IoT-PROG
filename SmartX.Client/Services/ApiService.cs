@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using SmartX.Client.Models;
 
 namespace SmartX.Client.Services;
@@ -6,12 +7,24 @@ namespace SmartX.Client.Services;
 public class ApiService
 {
     private readonly HttpClient _http;
+    private string? _token;
+
     public ApiService(HttpClient http) => _http = http;
 
     public async Task<bool> LoginAsync(string email, string pwd)
     {
         var res = await _http.PostAsJsonAsync("api/auth/login", new { Email = email, Password = pwd });
-        return res.IsSuccessStatusCode;
+        if (res.IsSuccessStatusCode)
+        {
+            var data = await res.Content.ReadFromJsonAsync<LoginResponse>();
+            if (data != null && !string.IsNullOrEmpty(data.Token))
+            {
+                _token = data.Token;
+                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+                return true;
+            }
+        }
+        return false;
     }
 
     public async Task<List<Sensor>> GetSensorsAsync()
@@ -38,6 +51,16 @@ public class ApiService
     public async Task SimulateCriticalAsync() => await _http.PostAsync("api/simulate/critical", null);
     public async Task SimulateDisconnectAsync() => await _http.PostAsync("api/simulate/disconnect", null);
 
+    public async Task<TelemetryRecord?> GetLatestTelemetryAsync(string macAddress)
+    {
+        try { var response = await _http.GetFromJsonAsync<TelemetryResponse>($"api/telemetry/{macAddress}"); return response?.Data; } catch { return null; }
+    }
+
+    public async Task<bool> DeleteSensorAsync(string macAddress)
+    {
+        try { var response = await _http.DeleteAsync($"api/sensors/{macAddress}"); return response.IsSuccessStatusCode; } catch { return false; }
+    }
+
     public async Task<int> SimulateBulkTelemetryAsync()
     {
         try { var r = await _http.PostAsync("api/telemetry/bulk", null); if (r.IsSuccessStatusCode) { var c = await r.Content.ReadFromJsonAsync<CountResponse>(); return c?.Count ?? 0; } return 0; } catch { return 0; }
@@ -47,34 +70,10 @@ public class ApiService
     {
         try { using var content = new MultipartFormDataContent(); using var sc = new StreamContent(stream); content.Add(sc, "file", fileName); var r = await _http.PostAsync($"api/sensors/{mac}/file", content); return r.IsSuccessStatusCode; } catch { return false; }
     }
-
-    public async Task<SmartX.Client.Models.TelemetryRecord?> GetLatestTelemetryAsync(string macAddress)
-    {
-        try
-        {
-            var response = await _http.GetFromJsonAsync<TelemetryResponse>($"api/telemetry/{macAddress}");
-            return response?.Data;
-        }
-        catch { return null; }
-    }
-
-    public async Task<bool> DeleteSensorAsync(string macAddress)
-    {
-        try
-        {
-            var response = await _http.DeleteAsync($"api/sensors/{macAddress}");
-            return response.IsSuccessStatusCode;
-        }
-        catch { return false; }
-    }
-
-    public class TelemetryResponse
-    {
-        public SmartX.Client.Models.TelemetryRecord? Data { get; set; }
-    }
 }
 
-// Helper wrappers to match API JSON responses
+public class LoginResponse { public string Token { get; set; } = ""; public string Email { get; set; } = ""; }
 public class SensorResponse { public List<Sensor> Sensors { get; set; } = new(); }
 public class StatsResponse { public DashboardStats Stats { get; set; } = new(); }
 public class CountResponse { public int Count { get; set; } }
+public class TelemetryResponse { public TelemetryRecord? Data { get; set; } }
