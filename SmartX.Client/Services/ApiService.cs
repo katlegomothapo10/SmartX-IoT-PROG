@@ -71,10 +71,16 @@ public class ApiService
     {
         try { var r = await _http.PostAsync("api/telemetry/bulk", null); if (r.IsSuccessStatusCode) { var c = await r.Content.ReadFromJsonAsync<CountResponse>(); return c?.Count ?? 0; } return 0; } catch { return 0; }
     }
-}
 
-public class LoginResponse { public string Token { get; set; } = ""; public string Email { get; set; } = ""; }
-public class SensorResponse { public List<Sensor> Sensors { get; set; } = new(); }
-public class StatsResponse { public DashboardStats Stats { get; set; } = new(); }
-public class CountResponse { public int Count { get; set; } }
-public class TelemetryResponse { public TelemetryRecord? Data { get; set; } }
+    // --- PART 3 METHODS ---
+    public async Task SimulateMeshAsync() => await _http.PostAsync("api/topology/simulate-mesh", null);
+
+    public async Task<MstResponse?> GetMstAsync(string mac)
+        => await _http.GetFromJsonAsync<MstResponse>($"api/topology/graph/mst/{mac}");
+
+    public async Task<BfsResponse?> GetBfsAsync(string mac)
+        => await _http.GetFromJsonAsync<BfsResponse>($"api/topology/graph/bfs/{mac}");
+
+    public async Task<RangeQueryResponse?> GetRangeQueryAsync(DateTime start, DateTime end)
+        => await _http.GetFromJsonAsync<RangeQueryResponse>($"api/topology/tree/range?start={start:yyyy-MM-ddTHH:mm:ss}&end={end:yyyy-MM-ddTHH:mm:ss}");
+}

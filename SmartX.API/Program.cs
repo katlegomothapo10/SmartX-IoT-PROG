@@ -184,4 +184,41 @@ app.MapPost("/api/simulate/disconnect", (RealTimeCommandService svc) => {
     }
 }).RequireAuthorization();
 
+// --- PART 3 ENDPOINTS (Trees & Graphs) ---
+
+// 1. Range Query (Tree)
+app.MapGet("/api/topology/tree/range", (DateTime start, DateTime end, SensorDataService svc) => {
+    var results = svc.HistoryTree.GetRange(start, end);
+    return Results.Ok(new { Count = results.Count, Data = results });
+}).RequireAuthorization();
+
+// 2. BFS Traversal (Graph)
+app.MapGet("/api/topology/graph/bfs/{mac}", (string mac, SensorDataService svc) => {
+    var connected = svc.NetworkGraph.BFS(mac);
+    return Results.Ok(new { StartNode = mac, AllConnectedNodes = connected });
+}).RequireAuthorization();
+
+// 3. Prim's MST (Graph)
+app.MapGet("/api/topology/graph/mst/{mac}", (string mac, SensorDataService svc) => {
+    var mst = svc.NetworkGraph.GetMinimumSpanningTree(mac);
+    return Results.Ok(new { StartNode = mac, MinimumSpanningTree = mst });
+}).RequireAuthorization();
+
+// 4. Simulate Mesh Connections (For testing the Graph)
+app.MapPost("/api/topology/simulate-mesh", (SensorDataService svc) => {
+    // We create a fake mesh topology between our seeded sensors
+    var macs = svc.GetAllSensors().Select(s => s.MacAddress).ToList();
+    if (macs.Count < 3) return Results.BadRequest("Need at least 3 sensors.");
+
+    // Create a web of connections with random weights (1 to 10)
+    var rand = new Random();
+    svc.NetworkGraph.AddEdge(macs[0], macs[1], rand.Next(1, 10));
+    svc.NetworkGraph.AddEdge(macs[1], macs[2], rand.Next(1, 10));
+    svc.NetworkGraph.AddEdge(macs[2], macs[0], rand.Next(1, 10));
+    svc.NetworkGraph.AddEdge(macs[0], macs[3], rand.Next(1, 10));
+    svc.NetworkGraph.AddEdge(macs[3], macs[4], rand.Next(1, 10));
+
+    return Results.Ok(new { Message = "Mesh connections established between sensors." });
+}).RequireAuthorization();
+
 app.Run();

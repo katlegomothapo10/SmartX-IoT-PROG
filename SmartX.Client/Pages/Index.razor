@@ -30,32 +30,47 @@ else
         </div>
 
         <div class="row g-4 justify-content-center">
+            <!-- Pillar 1 -->
             <div class="col-md-4">
-                <div class="card h-100 shadow border-0" @onclick="GoToDashboard" style="cursor: pointer;">
-                    <div class="card-body text-center p-4">
-                        <div class="pillar-icon" style="font-size: 3rem;">📡</div>
-                        <h4 class="mt-3">Data Ingestion</h4>
-                        <span class="badge bg-success">Active</span>
+                <a href="dashboard" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow border-0 pillar-card" style="cursor: pointer; transition: transform 0.2s;">
+                        <div class="card-body text-center p-4">
+                            <div style="font-size: 3rem;">📡</div>
+                            <h4 class="mt-3">Data Ingestion</h4>
+                            <p class="text-muted small">Manage sensors and live telemetry.</p>
+                            <span class="badge bg-success">Active</span>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+
+            <!-- Pillar 2 -->
             <div class="col-md-4">
-                <div class="card h-100 shadow border-0" @onclick="GoToCommandStream" style="cursor: pointer;">
-                    <div class="card-body text-center p-4">
-                        <div class="pillar-icon" style="font-size: 3rem;">⚡</div>
-                        <h4 class="mt-3">Command Stream</h4>
-                        <span class="badge bg-success">Active</span>
+                <a href="command-stream" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow border-0 pillar-card" style="cursor: pointer; transition: transform 0.2s;">
+                        <div class="card-body text-center p-4">
+                            <div style="font-size: 3rem;">⚡</div>
+                            <h4 class="mt-3">Command Stream</h4>
+                            <p class="text-muted small">Issue manual overrides and view insights.</p>
+                            <span class="badge bg-success">Active</span>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+
+            <!-- Pillar 3 -->
+            <!-- Pillar 3 -->
             <div class="col-md-4">
-                <div class="card h-100 shadow border-0 bg-light" style="opacity: 0.7; cursor: not-allowed;">
-                    <div class="card-body text-center p-4">
-                        <div class="pillar-icon" style="font-size: 3rem;">🌐</div>
-                        <h4 class="mt-3">Network Topology</h4>
-                        <span class="badge bg-secondary">Coming Soon</span>
+                <a href="network-topology" class="text-decoration-none text-dark">
+                    <div class="card h-100 shadow border-0 pillar-card" style="cursor: pointer; transition: transform 0.2s;">
+                        <div class="card-body text-center p-4">
+                            <div style="font-size: 3rem;">🌐</div>
+                            <h4 class="mt-3">Network Topology</h4>
+                            <p class="text-muted small">Graphs, MST, and historical data queries.</p>
+                            <span class="badge bg-success">Active</span>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -73,7 +88,4 @@ else
         if (success) _isLoggedIn = true;
         else _error = true;
     }
-
-    private void GoToDashboard() => Nav.NavigateTo("/dashboard");
-    private void GoToCommandStream() => Nav.NavigateTo("/command-stream");
 }

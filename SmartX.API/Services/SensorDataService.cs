@@ -1,6 +1,7 @@
 ﻿using SmartX.API.Models;
 using System.Collections.Concurrent;
 
+
 namespace SmartX.API.Services;
 
 public class SensorDataService
@@ -15,6 +16,8 @@ public class SensorDataService
     private readonly double[,] _gridSummary = new double[100, 3];
 
     private readonly object _batchLock = new();
+    public TelemetryTree HistoryTree { get; } = new();
+    public MeshGraph NetworkGraph { get; } = new();
     private int _batchRowIndex = 0;
     private int _batchColumnIndex = 0;
     private const int MaxBatchSize = 20;
@@ -33,6 +36,8 @@ public class SensorDataService
 
         _sensors[sensor.MacAddress] = sensor;
         _telemetryHistory[sensor.MacAddress] = new List<TelemetryRecord>();
+
+        NetworkGraph.AddNode(sensor.MacAddress);
     }
 
     public List<Sensor> GetAllSensors()
@@ -130,6 +135,8 @@ public class SensorDataService
         UpdateGridSummary(record);
 
         Interlocked.Increment(ref _totalIngested);
+
+        HistoryTree.Insert(record);
     }
 
     private void AddToBatchBuffer(TelemetryRecord record)
