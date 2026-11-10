@@ -1,6 +1,10 @@
-﻿namespace SmartX.API.Models;
+﻿using System.Text.Json.Serialization;
 
+namespace SmartX.API.Models;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum CommandType { TurnOn, TurnOff, Toggle, EmergencyShutdown }
+
 public enum CommandStatus { Pending, Executed, Undone, Failed }
 
 public class CommandRequest
@@ -35,4 +39,9 @@ public class LoginRequest
 {
     public string Email { get; set; } = "";
     public string Password { get; set; } = "";
+}
+
+public class SearchRequest
+{
+    public string Query { get; set; } = "";
 }

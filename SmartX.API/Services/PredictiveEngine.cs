@@ -11,28 +11,40 @@ public class PredictiveEngine
     {
         var actions = new List<SuggestedAction>();
 
-        if (_svc.UserSearchHistory.Any(q => q.Contains("pump", StringComparison.OrdinalIgnoreCase)))
+        // 1. Real Pattern Analysis based on Search History
+        if (!string.IsNullOrEmpty(_svc.LastSearchQuery) &&
+            _svc.SearchCommandPatterns.TryGetValue(_svc.LastSearchQuery, out var commandCounts))
         {
-            actions.Add(new SuggestedAction
+            // Find the most frequently executed command after this search
+            var topCommand = commandCounts.OrderByDescending(kvp => kvp.Value).FirstOrDefault();
+            if (topCommand.Value > 0)
             {
-                Title = "Pump Action Required",
-                Description = "You recently searched for pumps. Consider toggling the main pump.",
-                Reason = "Based on recent search history.",
-                TargetMac = "AA:BB:CC:DD:EE:01"
-            });
+                var totalCommands = commandCounts.Values.Sum();
+                double confidence = (double)topCommand.Value / totalCommands;
+
+                actions.Add(new SuggestedAction
+                {
+                    Title = $"Pattern Detected for '{_svc.LastSearchQuery}'",
+                    Description = $"You usually execute '{topCommand.Key}' after this search.",
+                    Reason = $"Based on {topCommand.Value} past occurrences ({confidence:P0} confidence).",
+                    TargetMac = "Recommended Device"
+                });
+            }
         }
 
+        // 2. Highlight Faulty Devices (Disconnected)
         foreach (var mac in _svc.DisconnectedNodes.Take(2))
         {
             actions.Add(new SuggestedAction
             {
                 Title = "Device Offline",
                 Description = $"Sensor {mac} is disconnected.",
-                Reason = "Hardware network fault.",
+                Reason = "Hardware network fault (Unique HashSet Alert).",
                 TargetMac = mac
             });
         }
 
+        // 3. Highlight Out-of-range readings (SortedDictionary)
         var highTemp = _svc.SensorTimeline.Values.LastOrDefault(m =>
             m.SensorType == SensorType.Environmental && Convert.ToDouble(m.Value) > 40);
 
@@ -46,6 +58,7 @@ public class PredictiveEngine
                 TargetMac = highTemp.DeviceMac
             });
         }
+
         return actions;
     }
 }

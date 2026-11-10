@@ -6,15 +6,16 @@
 <PageTitle>Smart-X | Command Stream</PageTitle>
 
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between mb-3">
-        <h2>⚡ Real-Time Command Stream</h2>
-        <button class="btn btn-outline-secondary" @onclick="GoBack">Back</button>
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+        <h2 class="fw-bold text-primary">⚡ Real-Time Command Stream</h2>
+        <button class="btn btn-outline-secondary" @onclick="GoBack">← Back to Menu</button>
     </div>
 
     <div class="row">
+        <!-- Left Panel: Controls & Simulators -->
         <div class="col-md-4">
-            <div class="card shadow-sm mb-3 border-primary">
-                <div class="card-header bg-primary text-white">Manual Override</div>
+            <div class="card shadow-sm mb-3 border-0 border-top border-primary border-4">
+                <div class="card-header bg-white fw-bold">Manual Override</div>
                 <div class="card-body">
                     <input class="form-control mb-2" placeholder="Device MAC (e.g. AA:BB...)" @bind="_cmdMac" />
                     <select class="form-select mb-2" @bind="_cmdType">
@@ -24,66 +25,80 @@
                         <option value="EmergencyShutdown">Emergency Shutdown</option>
                     </select>
                     <button class="btn btn-primary w-100 mb-2" @onclick="IssueCommand">Execute Command</button>
-                    <button class="btn btn-warning w-100" @onclick="UndoCommand">↩ Undo Last Action</button>
+                    <button class="btn btn-warning w-100 fw-bold" @onclick="UndoCommand">↩ Undo Last Action</button>
                 </div>
             </div>
 
-            <div class="card shadow-sm mb-3 border-danger">
-                <div class="card-header bg-danger text-white">Test Simulator</div>
+            <div class="card shadow-sm mb-3 border-0 border-top border-danger border-4">
+                <div class="card-header bg-white fw-bold text-danger">Test Simulator</div>
                 <div class="card-body">
                     <button class="btn btn-outline-danger w-100 mb-2" @onclick="SimulateCritical">🔥 Simulate High-Priority Alert</button>
                     <button class="btn btn-outline-secondary w-100" @onclick="SimulateDisconnect">🔌 Simulate Device Disconnect</button>
                 </div>
             </div>
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white">System Metrics</div>
+            <div class="card shadow-sm border-0 border-top border-dark border-4">
+                <div class="card-header bg-white fw-bold">System Metrics</div>
                 <div class="card-body">
-                    <div>Queue: @_stats?.QueueCount</div>
-                    <div>Priority Queue: @_stats?.CriticalCount</div>
-                    <div>Undo Stack: @_stats?.UndoCount</div>
-                    <div>Disconnected: @_stats?.DisconnectedCount</div>
+                    <div class="d-flex justify-content-between mb-1"><span>Telemetry Queue:</span> <strong>@_stats?.QueueCount</strong></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Priority Queue:</span> <strong>@_stats?.CriticalCount</strong></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Undo Stack:</span> <strong>@_stats?.UndoCount</strong></div>
+                    <div class="d-flex justify-content-between"><span>Disconnected:</span> <strong>@_stats?.DisconnectedCount</strong></div>
                 </div>
             </div>
         </div>
 
+        <!-- Right Panel: Insights & History -->
         <div class="col-md-8">
-            <div class="card shadow-sm mb-3 border-success">
-                <div class="card-header bg-success text-white">🤖 Predictive Automated Insights</div>
+            <div class="card shadow-sm mb-3 border-0 border-top border-success border-4">
+                <div class="card-header bg-white fw-bold text-success">🤖 Predictive Automated Insights</div>
                 <div class="card-body">
                     @if (_insights != null && _insights.Count > 0)
                     {
                         foreach (var insight in _insights)
                         {
-                            <div class="alert alert-info py-2 mb-2">
+                            <div class="alert alert-info py-2 mb-2 border-start border-4 border-info">
                                 <strong>@insight.Title</strong> - @insight.Description
-                                <br /><small class="text-muted">Reason: @insight.Reason</small>
+                                <br /><small class="text-muted"><i>Reason: @insight.Reason</i></small>
                             </div>
                         }
                     }
                     else
                     {
-
-                        <p class="text-muted m-0">No suggestions yet.</p>
+                        <p class="text-muted m-0 text-center py-3">No suggestions yet. Try searching for a device or simulating an alert.</p>
                     }
                 </div>
             </div>
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">Command History</div>
-                <div class="card-body p-0">
-                    <table class="table table-sm mb-0">
-                        <thead><tr><th>Device</th><th>Command</th><th>Status</th></tr></thead>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                    <span>Command History & Stack</span>
+                    <!-- SEARCH FILTER INPUT -->
+                    <input type="text" class="form-control form-control-sm w-50" placeholder="🔍 Filter by MAC or Command..." @bind="_searchFilter" @bind:event="oninput" />
+                </div>
+                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr><th>Device MAC</th><th>Command</th><th>Status</th></tr>
+                        </thead>
                         <tbody>
                             @if (_history != null)
                             {
-                                foreach (var item in _history)
+                                var filteredHistory = _history.Where(h => string.IsNullOrEmpty(_searchFilter) ||
+                                    h.DeviceMac.Contains(_searchFilter, StringComparison.OrdinalIgnoreCase) ||
+                                    h.CommandType.Contains(_searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                                foreach (var item in filteredHistory)
                                 {
-                                    <tr class="@(item.IsUndone ? "table-danger text-decoration-line-through" : "")">
+                                    <tr class="@(item.IsUndone ? "table-danger text-decoration-line-through text-muted" : "")">
                                         <td>@item.DeviceMac</td>
                                         <td>@item.CommandType</td>
                                         <td>@(item.IsUndone ? "Undone" : "Executed")</td>
                                     </tr>
+                                }
+                                if (!filteredHistory.Any())
+                                {
+                                    <tr><td colspan="3" class="text-center text-muted py-3">No commands match your filter.</td></tr>
                                 }
                             }
                         </tbody>
@@ -97,6 +112,7 @@
 @code {
     private string _cmdMac = "";
     private string _cmdType = "TurnOn";
+    private string _searchFilter = "";
     private RealtimeStats? _stats;
     private List<SuggestedAction>? _insights;
     private List<CommandRequest>? _history;
@@ -123,8 +139,13 @@
     private async Task IssueCommand()
     {
         if (string.IsNullOrEmpty(_cmdMac)) return;
-        await Api.IssueCommandAsync(new CommandRequest { DeviceMac = _cmdMac, CommandType = _cmdType });
+
+        // 1. Log Search FIRST
         await Api.LogSearchAsync(_cmdMac);
+
+        // 2. Issue Command SECOND
+        await Api.IssueCommandAsync(new CommandRequest { DeviceMac = _cmdMac, CommandType = _cmdType });
+
         _cmdMac = "";
         await RefreshData();
     }

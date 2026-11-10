@@ -13,18 +13,22 @@ public class ApiService
 
     public async Task<bool> LoginAsync(string email, string pwd)
     {
-        var res = await _http.PostAsJsonAsync("api/auth/login", new { Email = email, Password = pwd });
-        if (res.IsSuccessStatusCode)
+        try
         {
-            var data = await res.Content.ReadFromJsonAsync<LoginResponse>();
-            if (data != null && !string.IsNullOrEmpty(data.Token))
+            var res = await _http.PostAsJsonAsync("api/auth/login", new { Email = email, Password = pwd });
+            if (res.IsSuccessStatusCode)
             {
-                _token = data.Token;
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-                return true;
+                var data = await res.Content.ReadFromJsonAsync<LoginResponse>();
+                if (data != null && !string.IsNullOrEmpty(data.Token))
+                {
+                    _token = data.Token;
+                    _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
+        catch { return false; }
     }
 
     public async Task<List<Sensor>> GetSensorsAsync()
@@ -47,7 +51,9 @@ public class ApiService
     public async Task<List<CommandRequest>?> GetCommandHistoryAsync() => await _http.GetFromJsonAsync<List<CommandRequest>>("api/commands/history");
     public async Task<List<SuggestedAction>?> GetInsightsAsync() => await _http.GetFromJsonAsync<List<SuggestedAction>>("api/insights");
     public async Task<RealtimeStats?> GetRealtimeStatsAsync() => await _http.GetFromJsonAsync<RealtimeStats>("api/stats/realtime");
-    public async Task LogSearchAsync(string query) => await _http.PostAsJsonAsync($"api/search?q={query}", new { });
+
+    public async Task LogSearchAsync(string query) => await _http.PostAsJsonAsync("api/search", new { Query = query });
+
     public async Task SimulateCriticalAsync() => await _http.PostAsync("api/simulate/critical", null);
     public async Task SimulateDisconnectAsync() => await _http.PostAsync("api/simulate/disconnect", null);
 
@@ -64,11 +70,6 @@ public class ApiService
     public async Task<int> SimulateBulkTelemetryAsync()
     {
         try { var r = await _http.PostAsync("api/telemetry/bulk", null); if (r.IsSuccessStatusCode) { var c = await r.Content.ReadFromJsonAsync<CountResponse>(); return c?.Count ?? 0; } return 0; } catch { return 0; }
-    }
-
-    public async Task<bool> UploadConfigurationFileAsync(string mac, Stream stream, string fileName)
-    {
-        try { using var content = new MultipartFormDataContent(); using var sc = new StreamContent(stream); content.Add(sc, "file", fileName); var r = await _http.PostAsync($"api/sensors/{mac}/file", content); return r.IsSuccessStatusCode; } catch { return false; }
     }
 }
 
