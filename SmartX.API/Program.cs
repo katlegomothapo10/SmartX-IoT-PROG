@@ -221,4 +221,5 @@ app.MapPost("/api/topology/simulate-mesh", (SensorDataService svc) => {
     return Results.Ok(new { Message = "Mesh connections established between sensors." });
 }).RequireAuthorization();
 
-app.Run();
+app.Run();/ /   e n d   o f   f i l e  
+ 
