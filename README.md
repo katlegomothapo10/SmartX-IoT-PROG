@@ -41,6 +41,20 @@ The system uses secure JWT (JSON Web Token) authentication.
 
 ---
 
+pictures: <img width="1919" height="755" alt="image" src="https://github.com/user-attachments/assets/b35fd6f5-c42c-4eb6-8f8a-970b6706d829" />
+
+<img width="1905" height="887" alt="image" src="https://github.com/user-attachments/assets/027c1053-056b-4bab-867c-96829d2f1771" />
+
+<img width="1919" height="884" alt="image" src="https://github.com/user-attachments/assets/207aec8a-4039-4027-b5a1-7f41750bfa5b" />
+
+<img width="1919" height="794" alt="image" src="https://github.com/user-attachments/assets/6adf854c-7622-4253-b93a-ba5d5f74f2b3" />
+
+<img width="1238" height="898" alt="image" src="https://github.com/user-attachments/assets/e9d1f2af-a4e8-4462-b4ca-371a3e382b8b" />
+
+
+
+
+
 ## 🧠 Advanced Data Structures Implementation
 
 ### 1. Binary Search Tree (BST) - Historical Telemetry Queries
