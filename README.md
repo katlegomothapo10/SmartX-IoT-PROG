@@ -55,3 +55,27 @@ private TelemetryTreeNode InsertRec(TelemetryTreeNode? node, TelemetryRecord rec
     else if (record.Timestamp > node.Timestamp) node.Right = InsertRec(node.Right, record);
     return node;
 }
+
+
+2. Graph - Mesh Network Topology
+Location: SmartX.API/Models/MeshGraph.cs
+
+Contribution to Efficiency: Modelled as an Adjacency List (Dictionary<string, MeshNode>), this structure efficiently represents the physical mesh network. It allows the system to quickly look up a node's neighbours (Edges) without iterating through a massive 2D matrix, saving memory and processing time.
+
+3. Breadth-First Search (BFS) - Network Traversal
+Location: MeshGraph.BFS() method
+
+Contribution to Efficiency: Uses a Queue<string> and a HashSet<string> to explore the network level-by-level. This allows the system to identify all devices currently connected to a specific subnet in 
+O
+(
+V
++
+E
+)
+O(V+E) time, ensuring we know exactly which sensors are affected if a gateway goes down.
+
+4. Prim's Algorithm - Minimum Spanning Tree (MST)
+Location: MeshGraph.GetMinimumSpanningTree() method
+
+Contribution to Efficiency: Using a PriorityQueue, the algorithm greedily selects the lowest-weight edges (best signal strength) that connect all nodes. This mathematically replicates how real-world protocols (like Zigbee) determine the most power-efficient routing paths, minimising the battery drain of the ESP32 sensors.
+
