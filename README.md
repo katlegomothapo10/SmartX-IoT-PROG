@@ -2,16 +2,14 @@ Smart-X IoT Mesh Ecosystem
 Intelligent IoT Network Management, Graph Routing & Real-Time Telemetry Monitoring
 
 <p align="center">
-
-A Hybrid Internet of Things (IoT) Ecosystem Powered by ESP32 Microcontrollers, Advanced Data Structures and Intelligent Network Algorithms.
-
+**Connecting Devices. Processing Intelligence. Optimising Networks.**
 </p>
 
 1. Project Overview
 
-Smart-X IoT Mesh Ecosystem is a hybrid Internet of Things (IoT) platform developed to demonstrate the integration of embedded systems, network communication, data structures, graph algorithms and modern software engineering principles.
+Smart-X IoT Mesh Ecosystem is a hybrid Internet of Things (IoT) platform developed to demonstrate the integration of embedded systems, advanced data structures, graph algorithms and modern software engineering principles.
 
-The system is designed around a network of ESP32 microcontrollers that communicate within an IoT mesh environment. It provides a centralised platform for monitoring network activity, managing connected devices, analysing telemetry data and exploring efficient network-routing strategies.
+The system is designed around a network of ESP32 microcontrollers that communicate within an IoT mesh environment. It provides a centralised application for monitoring network activity, managing connected devices, analysing telemetry information and exploring efficient network-routing strategies.
 
 Rather than treating IoT devices as isolated components, Smart-X brings them together into an interconnected ecosystem where network information can be monitored, processed and visualised through a central application.
 
@@ -21,85 +19,85 @@ This repository contains the complete implementation of Parts 1, 2 and 3 of the 
 
 2. Project Demonstration
 
-🎥 Video Demonstration: Watch the Smart-X System Demo
+🎥 YouTube Video Demonstration: Watch the Smart-X System Demo
 
 The demonstration showcases the application's functionality, including authentication, network topology visualisation, graph traversal, network optimisation and telemetry management.
 
 3. Core System Features
 
-Smart-X integrates several key functionalities into one application.
+Smart-X integrates several important functionalities into one application.
 
 Feature	Description
-Authentication	JWT-based authentication for accessing the application.
-IoT Network Management	Monitoring and managing connected ESP32 devices.
+Authentication	JWT-based authentication for application access.
+IoT Network Management	Monitoring and management of connected ESP32 devices.
 Network Topology	Visual representation of relationships between network nodes.
-Breadth-First Search (BFS)	Traversal of the network to explore connected devices.
-Prim's Minimum Spanning Tree	Identification of a minimum-cost network spanning structure.
-Telemetry Management	Collection and processing of historical sensor information.
-Binary Search Tree	Efficient organisation and retrieval of timestamp-based telemetry records.
+Breadth-First Search (BFS)	Systematic traversal of connected network devices.
+Prim's Minimum Spanning Tree	Identification of a minimum-cost spanning structure.
+Telemetry Management	Organisation and processing of historical sensor information.
+Binary Search Tree	Timestamp-based organisation and retrieval of telemetry records.
 Network Visualisation	Graphical representation of network structures and algorithmic operations.
 4. Technology Stack
 
-The application combines embedded hardware, backend development and desktop application technologies.
+The application combines embedded hardware, backend development and client-side technologies.
 
 Technology	Purpose
 C#	Core application logic and backend development.
 .NET 8	Application framework and runtime.
-ASP.NET Core Web API	Backend services and communication.
+ASP.NET Core Web API	Backend services and application communication.
 Visual Studio 2022	Development and debugging environment.
 ESP32	Embedded IoT microcontroller platform.
-JSON Web Tokens (JWT)	Authentication and token-based access.
+JSON Web Tokens (JWT)	Token-based authentication.
 Graph Data Structures	Modelling IoT network connections.
-Binary Search Tree	Organising historical telemetry data.
+Binary Search Tree	Organising historical telemetry information.
 5. System Architecture
 
 Smart-X follows a hybrid architecture that separates device-level communication, backend processing and application-level interaction.
 
-Architectural Components
+5.1 Architectural Components
 
-1. IoT Device Layer
+IoT Device Layer
 
 The device layer consists of ESP32 microcontrollers responsible for interacting with sensors and participating in the IoT network.
 
-2. Backend API Layer
+Backend API Layer
 
 The ASP.NET Core Web API provides the central processing layer. It handles application requests, processes information and exposes functionality to the client application.
 
-3. Client Application Layer
+Client Application Layer
 
 The client provides the user interface through which users can authenticate, interact with the ecosystem, monitor network information and view algorithmic results.
 
-4. Data Structures and Algorithms Layer
+Data Structures and Algorithms Layer
 
-This layer provides the underlying computational logic for managing network relationships, traversing graph structures, optimising connectivity and retrieving historical telemetry.
+This layer provides the computational logic for managing network relationships, traversing graph structures, optimising connectivity and retrieving historical telemetry.
 
-High-Level Architecture
+5.2 High-Level Architecture
 text
-       ESP32 IoT DEVICES
-      /       |        \
-   Node 1   Node 2    Node 3
-      \       |        /
-       IoT MESH NETWORK
-              |
-              v
-     SMART-X BACKEND API
-        ASP.NET Core
-              |
-       Data Processing
-              |
-      DATA STRUCTURES
-       /           \
-   Graphs          BST
-      |              |
-  BFS / Prim     Telemetry
-       \           /
-        \         /
-         v       v
-      SMART-X CLIENT
-       User Interface
-              |
-       Monitoring &
-       Visualisation
+          ESP32 IoT DEVICES
+         /       |        \
+      Node 1   Node 2    Node 3
+         \       |        /
+          IoT MESH NETWORK
+                 |
+                 v
+        SMART-X BACKEND API
+           ASP.NET Core
+                 |
+          DATA PROCESSING
+                 |
+       DATA STRUCTURES & ALGORITHMS
+            /            \
+         GRAPHS           BST
+           |               |
+        BFS / Prim      Telemetry
+            \            /
+             \          /
+              v        v
+           SMART-X CLIENT
+            User Interface
+                 |
+          Monitoring and
+          Visualisation
 
 6. Advanced Data Structures and Algorithms
 
@@ -123,7 +121,7 @@ Records with later timestamps are inserted into the right subtree.
 Duplicate timestamps are not inserted by the current comparison logic.
 Range queries use timestamp comparisons to avoid exploring irrelevant branches.
 
-Performance Analysis:
+Performance Analysis
 
 Operation	Average Complexity	Worst Case
 Insertion	O(log n)	O(n)
@@ -207,63 +205,65 @@ Application in Smart-X:
 
 The algorithm demonstrates how network connections can be evaluated according to their weights to identify a minimum-cost spanning structure.
 
-In an IoT environment, this provides a useful foundation for exploring efficient network connectivity.
+In an IoT environment, this provides a foundation for exploring efficient network connectivity.
 
-Important distinction: A minimum spanning tree is not automatically a complete routing protocol. Actual network deployment would also need to consider factors such as link reliability, latency, energy consumption and changing device availability.
+Important distinction: A minimum spanning tree is not automatically a complete routing protocol. Actual network deployment would also need to consider link reliability, latency, energy consumption and changing device availability.
 
-7. Application Screenshots
+7. Application Screenshots and Visual Demonstrations
 
-The following screenshots demonstrate the implemented Smart-X application and its major functionality.
+This section presents visual evidence of the Smart-X application's implemented functionality. The screenshots demonstrate the user interface, network management environment and additional application features.
 
-7.1 Authentication and Application Dashboard
+7.1 Authentication and Main Dashboard
 
 The application provides an authentication interface before users access the main Smart-X environment.
 
-!Smart-X Authentication and Dashboard
+!Smart-X Authentication and Main Dashboard
 
-Figure 1: Authentication interface and main application landing page.
+Figure 1: JWT authentication interface and main application landing page.
 
-7.2 Network Topology and Graph Algorithms
+7.2 Network Topology and Graph Routing
 
-!Smart-X Network Topology
+This interface demonstrates the network topology and graph-based operations, including Breadth-First Search and Prim's Minimum Spanning Tree.
+
+!Smart-X Network Topology and Graph Routing
 
 Figure 2: Network topology visualisation demonstrating BFS traversal and Prim's Minimum Spanning Tree.
 
-7.3 Additional Application Functionality
+7.3 Additional Application Interfaces
 
-The following screenshots provide further evidence of the application's implemented interfaces, features and functionality.
+The following screenshots provide further visual evidence of the application's functionality and implemented interfaces.
 
-!Smart-X Application Screenshot 3
+!Smart-X Application Interface 3
 
-Figure 3: Additional application interface.
+Figure 3: Additional Smart-X application interface.
 
-!Smart-X Application Screenshot 4
+!Smart-X Application Interface 4
 
-Figure 4: Application functionality and system interface.
+Figure 4: Additional application functionality and system interface.
 
-!Smart-X Application Screenshot 5
+!Smart-X Application Interface 5
 
 Figure 5: Additional system functionality.
 
-!Smart-X Application Screenshot 6
+!Smart-X Application Interface 6
 
-Figure 6: Application interface and functionality.
+Figure 6: Smart-X application interface and functionality.
 
-!Smart-X Application Screenshot 7
+!Smart-X Application Interface 7
 
 Figure 7: Additional Smart-X system interface.
 
-!Smart-X Application Screenshot 8
+!Smart-X Application Interface 8
 
-Figure 8: Application functionality.
+Figure 8: Additional application functionality.
 
-!Smart-X Application Screenshot 9
+!Smart-X Application Interface 9
 
-Figure 9: Additional system interface.
+Figure 9: Additional Smart-X system interface.
 
-!Smart-X Application Screenshot 10
+!Smart-X Application Interface 10
 
-Figure 10: Additional Smart-X functionality.
+Figure 10: Additional application functionality.
 
 8. Installation and Execution
 
@@ -325,13 +325,13 @@ Note: Ensure the API is running and accessible to the client application. If nec
 
 Smart-X uses JSON Web Token (JWT) authentication to demonstrate token-based authentication between the client and backend.
 
-Authentication Workflow
+9.1 Authentication Workflow
 The user enters their login credentials.
 The application submits the authentication request.
 The backend processes the request.
 A JWT is issued following successful authentication.
 The client uses the token when communicating with protected API endpoints.
-Demo Credentials
+9.2 Demonstration Credentials
 
 For the current demonstration implementation:
 
@@ -390,19 +390,14 @@ Fault Tolerance: Improve network resilience by handling disconnected devices and
 These improvements would move the system closer to a more comprehensive, production-oriented IoT ecosystem.
 
 13. Repository Information
-
-Project: Smart-X IoT Mesh Ecosystem
-
-Repository: SmartX-IoT-PROG
-
-Framework: .NET 8
-
-Primary Language: C#
-
-Embedded Platform: ESP32
-
-Project Scope: Parts 1, 2 and 3
-
+Detail	Information
+Project Name	Smart-X IoT Mesh Ecosystem
+Repository	SmartX-IoT-PROG
+Framework	.NET 8
+Primary Language	C#
+Backend	ASP.NET Core Web API
+Embedded Platform	ESP32
+Project Scope	Parts 1, 2 and 3
 14. Conclusion
 
 Smart-X IoT Mesh Ecosystem demonstrates how embedded systems, software engineering, data structures and graph algorithms can be integrated into a unified IoT management platform.
@@ -413,6 +408,10 @@ The implementation of Binary Search Trees, Breadth-First Search and Prim's Minim
 
 Ultimately, Smart-X is more than an IoT monitoring application. It is a practical demonstration of how theoretical computer science principles can be applied to address challenges in distributed systems, network management and intelligent device ecosystems.
 
-Smart-X IoT Mesh Ecosystem
+<p align="center">
 
-Connecting devices. Processing intelligence. Optimising networks.
+SMART-X IoT MESH ECOSYSTEM
+
+Connecting Devices. Processing Intelligence. Optimising Networks.
+
+</p>
