@@ -11,17 +11,25 @@
             <h2 class="fw-bold text-primary">🌐 Network Topology & Mesh Routing</h2>
             <p class="text-muted small mb-0">Graph traversals, Minimum Spanning Trees, and Binary Search Tree queries.</p>
         </div>
-        <button class="btn btn-outline-secondary" @onclick="GoBack">← Back to Menu</button>
+        <a href="/" class="btn btn-outline-secondary">← Back to Menu</a>
     </div>
 
     <div class="row">
-        <!-- Left Panel: Graph & MST Controls -->
         <div class="col-md-5">
             <div class="card shadow-sm mb-3 border-0 border-top border-primary border-4">
                 <div class="card-header bg-white fw-bold">Mesh Graph Simulator</div>
                 <div class="card-body">
                     <p class="small text-muted">Generate connections between your seeded sensors to test graph traversals.</p>
-                    <button class="btn btn-primary w-100 mb-3" @onclick="SimulateMesh">🔗 Generate Mesh Connections</button>
+                    <button class="btn btn-primary w-100 mb-2" @onclick="SimulateMesh">🔗 Generate Mesh Connections</button>
+
+                    @if (_meshGenerated)
+                    {
+                        <div class="alert alert-success py-1 text-center mb-3">✅ Mesh generated successfully!</div>
+                    }
+                    @if (!string.IsNullOrEmpty(_meshError))
+                    {
+                        <div class="alert alert-danger py-1 text-center mb-3">❌ @_meshError</div>
+                    }
 
                     <hr />
 
@@ -66,7 +74,6 @@
             </div>
         </div>
 
-        <!-- Right Panel: Tree (Historical Range Query) -->
         <div class="col-md-7">
             <div class="card shadow-sm border-0 border-top border-warning border-4">
                 <div class="card-header bg-white fw-bold text-warning">Historical Telemetry (Binary Search Tree)</div>
@@ -118,17 +125,29 @@
 @code {
     private string _startMac = "AA:BB:CC:DD:EE:01";
     private string _bfsMac = "AA:BB:CC:DD:EE:01";
+    private bool _meshGenerated = false;
+    private string? _meshError;
 
     private MstResponse? _mstResult;
     private BfsResponse? _bfsResult;
     private RangeQueryResponse? _queryResult;
 
-    private DateTime _startTime = DateTime.Now.AddHours(-2);
-    private DateTime _endTime = DateTime.Now;
+    // Default to today (Local time on the browser)
+    private DateTime _startTime = DateTime.Today;
+    private DateTime _endTime = DateTime.Today.AddDays(1);
 
     private async Task SimulateMesh()
     {
-        await Api.SimulateMeshAsync();
+        try
+        {
+            _meshError = null;
+            await Api.SimulateMeshAsync();
+            _meshGenerated = true;
+        }
+        catch (Exception ex)
+        {
+            _meshError = "Failed to connect to API. Are you logged in?";
+        }
     }
 
     private async Task RunMst()
@@ -147,8 +166,10 @@
 
     private async Task RunRangeQuery()
     {
-        _queryResult = await Api.GetRangeQueryAsync(_startTime, _endTime);
-    }
+        // FIX: Convert Local Browser Time to UTC for the backend BST
+        var utcStart = _startTime.ToUniversalTime();
+        var utcEnd = _endTime.ToUniversalTime();
 
-    private void GoBack() => Nav.NavigateTo("/");
+        _queryResult = await Api.GetRangeQueryAsync(utcStart, utcEnd);
+    }
 }

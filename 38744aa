@@ -1,0 +1,10 @@
+[33m75b2149[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m Merge branch 'master' of https://github.com/katlegomothapo10/SmartX-IoT-PROG
+[33mf4a9b85[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Update README.md
+[33m38744aa[m Completed Part 3: Implemented BFS, Prim's MST, and BST Range Queries with full UI integration
+[33m3309d4e[m Added Part 3 Graph models, BFS traversal, and Prim's MST algorithms
+[33m8d6d0b9[m Refactored backend: Added background queue worker, HashSet duplicate blocking, and real Predictive Engine confidence scoring
+[33m35926e7[m Merge branch 'master' of https://github.com/katlegomothapo10/SmartX-IoT-PROG
+[33m74efa69[m Implement real JWT authentication and secure API endpoints
+[33m46c6fca[m Update README.md
+[33mfbb3b79[m Finalize Sensor model
+[33m6905147[m Add CSS comment
