@@ -1,6 +1,8 @@
 Smart-X IoT Mesh Ecosystem
 PROG7312 – Final Portfolio of Evidence (PoE)
 
+YouTube Demonstration: https://youtu.be/cJ-JQjNSEB0?feature=shared
+
 A hybrid Internet of Things (IoT) ecosystem designed to monitor, manage, and analyse data across a simulated mesh network of ESP32 microcontrollers.
 
 The Smart-X IoT Mesh Ecosystem integrates advanced data structures and algorithms with a modern web application architecture. It combines a Blazor WebAssembly frontend, an ASP.NET Core Minimal API backend, and Docker support to provide a centralised platform for telemetry monitoring, device management, command execution, and network topology analysis.
@@ -24,9 +26,7 @@ Authentication: JWT (JSON Web Tokens)
 API Documentation: Swagger / OpenAPI
 Containerisation: Docker and Docker Compose
 Data Structures: Trees, Graphs, Queues, Stacks, HashSets, and Dictionaries
-🎥 Video Demonstration & Final Report
-YouTube Demonstration: Watch Project Demonstration
-Final Project Report (PDF): View Project Completion Report
+
 🚀 Installation and Execution
 Prerequisites
 
