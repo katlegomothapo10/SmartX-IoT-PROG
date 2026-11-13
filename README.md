@@ -114,6 +114,9 @@ Provides manual device override controls, command execution history, Stack-based
 5. Network Topology and Graph Routing
 
 <img width="1919" height="794" alt="Topology Dashboard" src="https://github.com/user-attachments/assets/6adf854c-7622-4253-b93a-ba5d5f74f2b3" />
+<img width="581" height="379" alt="image" src="https://github.com/user-attachments/assets/12b72a8c-9e96-4700-b91f-f02463ec0cbb" />
+<img width="581" height="434" alt="image" src="https://github.com/user-attachments/assets/00714656-ebc8-4054-9d40-23c5a66c23c7" />
+
 
 Visualises the IoT mesh network and demonstrates graph-based connectivity analysis using Breadth-First Search (BFS) and Prim's Minimum Spanning Tree (MST) algorithm.
 
