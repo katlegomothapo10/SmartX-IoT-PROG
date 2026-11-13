@@ -21,18 +21,18 @@
                 <div class="card-body">
                     <p class="small text-muted">Generate connections between your seeded sensors to test graph traversals.</p>
                     <button class="btn btn-primary w-100 mb-2" @onclick="SimulateMesh">🔗 Generate Mesh Connections</button>
-
-                    @if (_meshGenerated)
-                    {
-                        <div class="alert alert-success py-1 text-center mb-3">✅ Mesh generated successfully!</div>
+                    
+                    @if (_meshGenerated) 
+                    { 
+                        <div class="alert alert-success py-1 text-center mb-3">✅ Mesh generated successfully!</div> 
                     }
                     @if (!string.IsNullOrEmpty(_meshError))
                     {
                         <div class="alert alert-danger py-1 text-center mb-3">❌ @_meshError</div>
                     }
-
+                    
                     <hr />
-
+                    
                     <label class="fw-bold mb-2">Prim's Algorithm (MST)</label>
                     <div class="input-group mb-2">
                         <input class="form-control" placeholder="Start MAC (e.g. AA:BB...)" @bind="_startMac" />
@@ -52,7 +52,7 @@
                     }
 
                     <hr />
-
+                    
                     <label class="fw-bold mb-2">BFS Traversal</label>
                     <div class="input-group mb-2">
                         <input class="form-control" placeholder="Start MAC" @bind="_bfsMac" />
@@ -79,7 +79,7 @@
                 <div class="card-header bg-white fw-bold text-warning">Historical Telemetry (Binary Search Tree)</div>
                 <div class="card-body">
                     <p class="small text-muted">Query historical telemetry using a Binary Search Tree for O(log n) retrieval.</p>
-
+                    
                     <div class="row g-2 mb-3 align-items-end">
                         <div class="col-md-4">
                             <label class="small fw-bold">Start Time</label>
@@ -127,7 +127,7 @@
     private string _bfsMac = "AA:BB:CC:DD:EE:01";
     private bool _meshGenerated = false;
     private string? _meshError;
-
+    
     private MstResponse? _mstResult;
     private BfsResponse? _bfsResult;
     private RangeQueryResponse? _queryResult;
@@ -152,14 +152,14 @@
 
     private async Task RunMst()
     {
-        if (string.IsNullOrEmpty(_startMac)) return;
+        if(string.IsNullOrEmpty(_startMac)) return;
         _mstResult = await Api.GetMstAsync(_startMac);
         _bfsResult = null;
     }
 
     private async Task RunBfs()
     {
-        if (string.IsNullOrEmpty(_bfsMac)) return;
+        if(string.IsNullOrEmpty(_bfsMac)) return;
         _bfsResult = await Api.GetBfsAsync(_bfsMac);
         _mstResult = null;
     }
@@ -169,7 +169,7 @@
         // FIX: Convert Local Browser Time to UTC for the backend BST
         var utcStart = _startTime.ToUniversalTime();
         var utcEnd = _endTime.ToUniversalTime();
-
+        
         _queryResult = await Api.GetRangeQueryAsync(utcStart, utcEnd);
     }
 }
